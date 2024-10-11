@@ -23,4 +23,3 @@ int str2int(const char *str) {
 
 return 0;
 }
- 
