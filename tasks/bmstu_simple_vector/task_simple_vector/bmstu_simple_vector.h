@@ -30,12 +30,7 @@ class simple_vector
 
 		reference operator*() const { return *ptr_; }
 
-		pointer operator->() const { return ptr_; }
-
-		friend pointer to_address(const iterator& it) noexcept
-		{
-			return it.ptr_;
-		}
+		pointer operator->() { return nullptr; }
 
 		iterator& operator=(const iterator& other) = default;
 
