@@ -148,7 +148,7 @@ public:
 		tail_->prev = head_;
 		size_ = 0;
 		for (const auto& val: values) {
-			oush_back(val);
+			push_back(val);
 		}
 	}
 
@@ -302,7 +302,7 @@ public:
 		for (size_t i = 0; i < pos; ++i) {
 			current = current->next;
 		}
-		returrn current->data;
+		return current->data;
 	}
 
 	friend bool operator==(const list& l, const list& r) {
@@ -314,7 +314,7 @@ public:
 			++it1;
 			++it2;
 		}
-		return true
+		return true;
 	}
 	friend std::ostream& operator<<(std::ostream& os, const list& other) {
 		for (const auto& cal : other) {
