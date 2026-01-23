@@ -126,7 +126,7 @@ class avl_balanced_tree
 
 		else if (key > node->key)
 		{
-			insert(key, value, node->right);
+			node->right = insert(key, value, node->right);
 		}
 
 		else
@@ -263,6 +263,7 @@ class avl_balanced_tree
 	{
 		tree_node<K, V>* k2 = k1->right;
 		k1->right = k2->left;
+		k2->left = k1;
 
 		k1->height =
 			1 + std::max(heightOfTree(k1->left), heightOfTree(k1->right));
@@ -304,7 +305,7 @@ class avl_balanced_tree
 			else
 				doubleWithLeftChild(t);	 // LR
 		}
-		else if (heightOfTree(t->right) - heightOfTree(t->right->left))
+		else if (heightOfTree(t->right) - heightOfTree(t->left) > 1)
 		{
 			if (heightOfTree(t->right->right) >= heightOfTree(t->right->left))
 				rotateWithRightChild(t);  // RR
@@ -394,6 +395,18 @@ class map
 		explicit iterator(tree_node<K, V>* root, bool is_end = false)
 			: current_(nullptr), pair_cache_(K{}, V{})
 		{
+			if (is_end || root == nullptr)
+				return;
+
+			tree_node<K, V>* node = root;
+			while (node)
+			{
+				stack_.push(node);
+				node = node->left;
+			}
+
+			current_ = stack_.top();
+			stack_.pop();
 			// TODO: Реализовать инициализацию итератора
 			// Для begin(): нужно найти самый левый узел
 			// Для end(): current_ должен остаться nullptr
@@ -401,6 +414,7 @@ class map
 
 		typename iterator::reference operator*() const override
 		{
+			pair_cache_ = {current_->key, current_->value};
 			// TODO: Реализовать разыменование
 			// Нужно вернуть std::pair<const K, V> с текущим ключом и значением
 			return pair_cache_;
