@@ -207,7 +207,14 @@ class list
 
 	T operator[](size_t pos) const {}
 
-	T& operator[](size_t pos) { return *(static_cast<T*>((void*)&pos)); }
+	T& operator[](size_t index) { 
+		node* current = head_;
+
+		for (size_t i = 0; i < index; ++i){
+		 current = current->next_node_;
+		}
+		return current->value_;
+	 }
 
 	friend bool operator==(const list& l, const list& r) { return true; }
 

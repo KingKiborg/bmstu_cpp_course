@@ -110,84 +110,216 @@ class avl_balanced_tree
 	tree_node<K, V>* insert(const K& key,
 							const V& value,
 							tree_node<K, V>*& node)
-	{
-		// TODO: Реализовать вставку узла в AVL дерево
-		// 1. Если node == nullptr, создать новый узел
+	{  // ==================== Вставка ====================
+
+		if (node == nullptr)
+		{
+			node = new tree_node<K, V>(key, value);
+			++size_;
+			return node;
+		}
+
+		if (key < node->key)
+		{
+			node->left = insert(key, value, node->left);
+		}
+
+		else if (key > node->key)
+		{
+			insert(key, value, node->right);
+		}
+
+		else
+		{
+			// Ключ уже существует - обновляем значение
+			node->value = value;
+			return node;
+		}
+
+		balance(node);
+		return node;
+		// TODO: Реализовать вставку узла в AVL дерево ready
+		// 1. Если node == nullptr, создать новый узел 1
 		// 2. Рекурсивно вставить в левое или правое поддерево в зависимости от
-		// ключа
-		// 3. Обновить значение, если ключ уже существует
-		// 4. Вызвать balance(node) для балансировки
+		// ключа 1
+		// 3. Обновить значение, если ключ уже существует 1
+		// 4. Вызвать balance(node) для балансировки 1
 		return nullptr;
 	}
 
 	void remove(const K& key, tree_node<K, V>*& node)
 	{
-		// TODO: Реализовать удаление узла из AVL дерева
-		// 1. Найти узел с заданным ключом
+		// ==================== Удаление ====================
+		if (node == nullptr)
+			return;
+
+		if (key < node->key)
+		{
+			remove(key, node->left);
+		}
+
+		else if (key > node->key)
+		{
+			remove(key, node->right);
+		}
+
+		else
+		{
+			// Найден узел
+			if (node->left != nullptr && node->right != nullptr)
+			{
+				// Два ребенка: берем минимум из правого поддрева
+				tree_node<K, V>* minNode = findMinPtr(node->right);
+				node->key = minNode->key;
+				node->value = minNode->value;
+				remove(node->key, node->right);
+			}
+			else
+			{
+				// 0 или ребенок
+				tree_node<K, V>* oldNode = node;
+				node = (node->left != nullptr) ? node->left : node->right;
+				delete oldNode;
+				--size_;
+			}
+		}
+
+		if (node != nullptr)
+			balance(node);
+		// TODO: Реализовать удаление узла из AVL дерева ready
+		// 1. Найти узел с заданным ключом 1
 		// 2. Обработать 4 случая:
-		//    - Узел без детей (лист)
-		//    - Узел с одним ребенком (левым или правым)
-		//    - Узел с двумя детьми (заменить на минимальный из правого
+		//    - Узел без детей (лист)  1
+		//    - Узел с одним ребенком (левым или правым) 1
+		//    - Узел с двумя детьми (заменить на минимальный из правого 1
 		//    поддерева)
-		// 3. Декрементировать size_
-		// 4. Вызвать balance(node) для балансировки
+		// 3. Декрементировать size_ 1
+		// 4. Вызвать balance(node) для балансировки 1
 	}
 
 	tree_node<K, V>* find(const K& key, tree_node<K, V>* node) const
 	{
-		// TODO: Реализовать поиск узла по ключу
-		// Рекурсивно искать в левом или правом поддереве
-		return nullptr;
+		if (!node)
+		{
+			return nullptr;
+		}
+		if (key < node->key)
+		{
+			return find(key, node->left);
+		}
+		if (key > node->key)
+		{
+			return find(key, node->right);
+		}
+		return node;
+		// TODO: Реализовать поиск узла по ключу ready
+		// Рекурсивно искать в левом или правом поддереве 1
 	}
 
 	tree_node<K, V>* findMinPtr(tree_node<K, V>* node)
 	{
-		// TODO: Найти узел с минимальным ключом в поддереве
-		// Подсказка: идти влево, пока возможно
-		return nullptr;
+		if (!node)
+		{
+			return nullptr;
+		}
+		while (node->left)
+		{
+			node = node->left;
+		}
+		return node;
+		// TODO: Найти узел с минимальным ключом в поддереве ready
+		// Подсказка: идти влево, пока возможно 1
 	}
 
 	uint8_t heightOfTree(tree_node<K, V>* t)
 	{
-		// TODO: Вычислить высоту дерева
-		// Высота пустого дерева = 0
-		// Высота дерева = 1 + max(высота левого, высота правого)
-		return 0;
+		if (!t)
+		{
+			return 0;
+		}
+		return t->height;
+		// TODO: Вычислить высоту дерева ready
+		// Высота пустого дерева = 0 1
+		// Высота дерева = 1 + max(высота левого, высота правого) 1
 	}
 
 	void rotateWithLeftChild(tree_node<K, V>*& k2)
 	{
-		// TODO: Реализовать правый поворот (rotation with left child)
-		// Используется для балансировки Left-Left случая
+		tree_node<K, V>* k1 = k2->left;
+		k2->left = k1->right;
+		k1->right = k2;
+
+		k2->height =
+			1 + std::max(heightOfTree(k2->left), heightOfTree(k2->right));
+		k1->height =
+			1 + std::max(heightOfTree(k1->left), heightOfTree(k1->right));
+
+		k2 = k1;
+		// TODO: Реализовать правый поворот (rotation with left child) ready
+		// Используется для балансировки Left-Left случая 1
 	}
 
 	void rotateWithRightChild(tree_node<K, V>*& k1)
 	{
-		// TODO: Реализовать левый поворот (rotation with right child)
-		// Используется для балансировки Right-Right случая
+		tree_node<K, V>* k2 = k1->right;
+		k1->right = k2->left;
+
+		k1->height =
+			1 + std::max(heightOfTree(k1->left), heightOfTree(k1->right));
+		k2->height =
+			1 + std::max(heightOfTree(k2->left), heightOfTree(k2->right));
+
+		k1 = k2;
+		// TODO: Реализовать левый поворот (rotation with right child) ready
+		// Используется для балансировки Right-Right случая 1
 	}
 
 	void doubleWithLeftChild(tree_node<K, V>*& k3)
 	{
-		// TODO: Реализовать двойной поворот Left-Right
+		rotateWithRightChild(k3->left);
+		rotateWithLeftChild(k3);
+		// TODO: Реализовать двойной поворот Left-Right ready
 		// Сначала левый поворот на левом ребенке, затем правый поворот на узле
+		// 1
 	}
 
 	void doubleWithRightChild(tree_node<K, V>*& k1)
 	{
-		// TODO: Реализовать двойной поворот Right-Left
+		rotateWithLeftChild(k1->right);
+		rotateWithRightChild(k1);
+		// TODO: Реализовать двойной поворот Right-Left ready
 		// Сначала правый поворот на правом ребенке, затем левый поворот на узле
+		// 1
 	}
 
 	void balance(tree_node<K, V>*& t)
 	{
-		// TODO: Реализовать балансировку AVL дерева
-		// 1. Вычислить разность высот левого и правого поддеревьев
-		// 2. Если разность > 1, выполнить соответствующие повороты:
-		//    - Left-Left: rotateWithLeftChild
-		//    - Left-Right: doubleWithLeftChild
-		//    - Right-Right: rotateWithRightChild
-		//    - Right-Left: doubleWithRightChild
+		if (t == nullptr)
+			return;
+
+		if (heightOfTree(t->left) - heightOfTree(t->right) > 1)
+		{
+			if (heightOfTree(t->left->left) >= heightOfTree(t->left->right))
+				rotateWithLeftChild(t);	 // LL
+			else
+				doubleWithLeftChild(t);	 // LR
+		}
+		else if (heightOfTree(t->right) - heightOfTree(t->right->left))
+		{
+			if (heightOfTree(t->right->right) >= heightOfTree(t->right->left))
+				rotateWithRightChild(t);  // RR
+			else
+				doubleWithRightChild(t);  // RL
+		}
+
+		t->height = 1 + std::max(heightOfTree(t->left), heightOfTree(t->right));
+		// TODO: Реализовать балансировку AVL дерева ready
+		// 1. Вычислить разность высот левого и правого поддеревьев 1
+		// 2. Если разность > 1, выполнить соответствующие повороты: 1
+		//    - Left-Left: rotateWithLeftChild 1
+		//    - Left-Right: doubleWithLeftChild 1
+		//    - Right-Right: rotateWithRightChild 1
+		//    - Right-Left: doubleWithRightChild 1
 	}
 
 	void inorder_print(tree_node<K, V>* node)
@@ -282,6 +414,30 @@ class map
 
 		iterator& operator++() override
 		{
+			if (!current_)
+			{
+				return *this;
+			}
+			if (current_->right)
+			{
+				tree_node<K, V>* node = current_->right;
+				while (node)
+				{
+					stack_.push(node);
+					node = node->left;
+				}
+			}
+
+			if (!stack_.empty())
+			{
+				current_ = stack_.top();
+				stack_.pop();
+			}
+			else
+			{
+				current_ = nullptr;
+			}
+
 			// TODO: Реализовать переход к следующему элементу (in-order)
 			// Подсказка: используйте стек для обхода дерева
 			return *this;
