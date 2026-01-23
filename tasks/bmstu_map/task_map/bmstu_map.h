@@ -414,7 +414,9 @@ class map
 
 		typename iterator::reference operator*() const override
 		{
-			pair_cache_ = {current_->key, current_->value};
+			pair_cache_.~value_type();
+			new (&pair_cache_)
+				typename iterator::value_type(current_->key, current_->value);
 			// TODO: Реализовать разыменование
 			// Нужно вернуть std::pair<const K, V> с текущим ключом и значением
 			return pair_cache_;
@@ -422,6 +424,7 @@ class map
 
 		typename iterator::pointer operator->() const override
 		{
+			operator*();
 			// TODO: Реализовать оператор стрелки
 			return &pair_cache_;
 		}
